@@ -84,9 +84,23 @@ export default function Office() {
                 <OfficeModal open={open}
                 onClose={() => setOpen(false)}
                 onSave={save}
-                defaultValues={edit}>
+                defaultValues={edit} />
 
-                </OfficeModal>
+                <div className="flex gap-2 mt-4">
+                    <button disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className="px-3 py-1 bg-gray-200 rounded">
+                        Prev
+                    </button>
+
+                    <span> Page {meta.currrent_page} of {meta.last_page} </span>
+
+                    <button disabled={page === meta.last_page}
+                    onClick={() => setPage(page + 1)}
+                    className="px-3 py-1 bg-gray-200 rounded">
+                        Next
+                    </button>
+                </div>
             </main>
         </AppLayout>
     );
