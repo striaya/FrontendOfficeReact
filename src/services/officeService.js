@@ -1,7 +1,16 @@
 import auth from "./Auth";
 
 // list data transaksi
-export const getOffice = () => auth.get("/offices");
+export const getOffice = (page = 1, perPage = 20, search = "") => {
+    return auth.get("/office", {
+        params: {
+            page,
+            per_page: perPage,
+            search
+        }
+    });
+};
+// } auth.get("/offices");
 
 //  save data transaksi
 export const storeOffice = (data) => auth.post("/offices", data);

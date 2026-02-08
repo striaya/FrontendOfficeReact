@@ -2,6 +2,11 @@ import AppLayout from "../layout/AppLayout";
 
 import { useEffect, useState, useCollback } from "react";
 import { getOffice, storeOffice, updateOffice, deleteOffice } from "../services/officeService";
+import OfficeTable from "../components/OfficeTable";
+import OfficeModal from "../components/OfficeModal";
+import ImportExcel from "../components/ImportExcel";
+import { exportExcel, exportPDF } from "../utils/export";
+
 
 export default function Office() {
     const [ data, setData ] = useState([])
@@ -38,10 +43,14 @@ export default function Office() {
         console.log("Edit Data:", edit);
         try {
             if(edit) {
+                console.log("Update ID:", edit.officeCode)
                 await updateOffice(edit.officeCode, form);
             } else {
                 await storeOffice(form);
             }
+            setOpen(false);
+            setEdit(null);
+            load();
         } catch (err) {
             console.error("Save Error: ", err);
         }
@@ -50,12 +59,35 @@ export default function Office() {
     const remove = async(id) => {
         if(!confirm("Apakah kamu yakin ingin delete ini?")) {
             await deleteOffice(id);
+            load();
         }
     };
 
     return(
         <AppLayout>
+            <main className="p-6 w-full space-y-6">
+                <h1 className="text-2xl font-bold">Office Management</h1>
 
+                <div className="flex flex-wrap gap-4">
+                    <button onClick={() => setOpen(true)} className="bg-blue-600 text-white px-3 py-1 rounded">Add</button>
+                    <button onClick={() => exportExcel(data)} className="bg-green-600 text-white px-3 py-1 rounded">Export Excel</button>
+                    <button onClick={() => exportPDF(data)} className="bg-yellow-600 text-white px-3 py-1 rounded">Export PDF</button>
+                    <ImportExcel onImport={d => console.log(d)} />
+                </div>
+
+                <OfficeTable data={data}
+                onEdit={(row) => { setEdit(row); setOpen(true); }}
+                onDelete={remove}
+                onView={(row) => alert(JSON.stringify(row, null, 2))}
+                onExport={(rows) => exportExcel(rows)} />
+
+                <OfficeModal open={open}
+                onClose={() => setOpen(false)}
+                onSave={save}
+                defaultValues={edit}>
+
+                </OfficeModal>
+            </main>
         </AppLayout>
     );
 }
